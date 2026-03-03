@@ -1,0 +1,20 @@
+# PowerShell
+*.psm1.bak
+*.psd1.bak
+
+# OS
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# AI assistant files
+.copilot/
+.claude/
+.github/copilot-instructions.md
