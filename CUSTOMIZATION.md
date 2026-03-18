@@ -1,34 +1,92 @@
 # Customization
 
-## Add Packages
+All user-configurable values live in `bootstrap-config.json`, located in the same directory as the profile script. If the file is present, its values override the built-in defaults. If it's missing, the script works identically to having the shipped defaults.
 
-Just add WinGet package IDs to the `$packages` array:
+The repo includes a `bootstrap-config.json` with the default configuration. Copy it next to your `$PROFILE` and edit to taste.
 
-```powershell
-$silent = $false  # global override: $true suppresses all [ok] lines
-$packages = @(
-    @{ Id = "Microsoft.PowerShell";                             Install = $true;  Update = $true;  Silent = $true }
-    @{ Id = "JanDeDobbeleer.OhMyPosh";                          Install = $true;  Update = $true;  Silent = $true }
-    @{ Id = @("GitHub.Copilot", "GitHub.Copilot.Prerelease");   Install = $true;  Update = $true;  Process = "copilot"; Silent = $true }
-    @{ Id = "nepnep.neofetch-win";                              Install = $true;  Update = $false }
-    @{ Id = "Microsoft.VisualStudioCode";                       Install = $false; Update = $true;  Process = "Code";    Silent = $true }
-    @{ Id = "Git.Git";                                          Install = $true;  Update = $true }
-)
+## Config File
+
+```json
+{
+    "silent": false,
+    "theme": null,
+    "packages": [
+        { "id": "Microsoft.PowerShell", "install": true, "update": true, "silent": false },
+        { "id": "JanDeDobbeleer.OhMyPosh", "install": true, "update": true, "silent": false },
+        ...
+    ],
+    "cliProfiles": [
+        { "name": "Copilot CLI", "cmd": "copilot", "iconFile": "Copilot.png" },
+        ...
+    ],
+    "modules": [
+        { "name": "PSReadLine", "minVersion": "2.4.5", "minPS": 7, "installParams": { "SkipPublisherCheck": true }, "silent": true },
+        ...
+    ]
+}
 ```
 
-Each entry supports these fields:
+Each top-level key is independent - include only the keys you want to override. Missing keys keep their built-in defaults.
 
-- **Id** - WinGet package ID (string or array of alternatives). Arrays check each in order - first match wins. First entry is the default install target if none are found.
-- **Install** - `$true` to auto-install if missing, `$false` to skip
-- **Update** - `$true` to auto-update, `$false` to just report available updates
-- **Process** - optional process name to check before updating. If the process is in use, the update is skipped with a yellow warning instead of failing with a COM error. Useful for CLI tools you keep open in other tabs (Copilot, Claude, VS Code, etc).
-- **Silent** - `$true` to suppress the `[ok]` status line for this package. Errors, warnings, installs, and updates always show regardless. Great for packages you don't need to see every startup.
+## Packages
 
-The `$silent` variable above the array is a global override. Set it to `$true` and ALL `[ok]` lines are suppressed (packages, modules, fonts, Windows Terminal config). Module calls also accept `-Silent` individually via `Initialize-Module`.
+Each entry in the `packages` array supports these fields:
 
-## Add Tab Completions
+- **id** - WinGet package ID (string or array of alternatives). Arrays check each in order - first match wins. First entry is the default install target if none are found.
+- **install** - `true` to auto-install if missing, `false` to skip
+- **update** - `true` to auto-update, `false` to just report available updates
+- **process** - optional process name to check before updating. If the process is in use, the update is skipped with a yellow warning instead of failing with a COM error. Useful for CLI tools you keep open in other tabs (Copilot, Claude, VS Code, etc).
+- **silent** - `true` to suppress the `[ok]` status line for this package. Errors, warnings, installs, and updates always show regardless.
 
-There are two patterns depending on the tool.
+The top-level `silent` field is a global override. Set it to `true` and all `[ok]` lines are suppressed everywhere.
+
+### Example: add a package
+
+```json
+{
+    "packages": [
+        { "id": "Git.Git", "install": true, "update": true }
+    ]
+}
+```
+
+Note: the `packages` array replaces the default list entirely. Include all packages you want tracked, not just additions.
+
+## Modules
+
+Each entry in the `modules` array supports these fields:
+
+- **name** - PSGallery module name
+- **minVersion** - minimum version (triggers update if below)
+- **minPS** - skip install/update below this PowerShell major version
+- **maxPS** - skip entirely above this PowerShell major version (e.g. Terminal-Icons only on PS5)
+- **installParams** - extra parameters passed to `Install-Module` (e.g. `{ "Scope": "CurrentUser" }`)
+- **requires** - dependency check: `{ "module": "PSReadLine", "minVersion": "2.2.6" }`. Module is skipped if the dependency isn't loaded or is below the minimum version.
+- **silent** - `true` to suppress the `[ok]` status line
+
+Modules are processed in order. Put dependencies first (e.g. PSReadLine before CompletionPredictor).
+
+## Theme
+
+Set `theme` to an Oh My Posh theme name or full path. Use `null` for the default theme.
+
+```json
+{
+    "theme": "agnoster"
+}
+```
+
+## Windows Terminal CLI Profiles
+
+Each entry in `cliProfiles` adds a Windows Terminal profile for a CLI tool:
+
+- **name** - profile name in Windows Terminal (matched by name, not GUID)
+- **cmd** - CLI command to run
+- **iconFile** - icon filename (looked up next to `$PROFILE`, falls back to default PS7 icon)
+
+## Tab Completions
+
+Tab completions are not part of the config file since each tool has a unique completer pattern. To add a new completer, edit the script directly.
 
 For tools that output a completion script (most common - just copy a line and change the name):
 
@@ -49,7 +107,3 @@ if (Get-Command mycli -ErrorAction SilentlyContinue) {
 ```
 
 Check the tool's docs for which pattern it uses.
-
-## Add Windows Terminal Profiles
-
-Follow the Copilot/Claude pattern in `Update-WindowsTerminalSettings`. Add an entry to `$cliProfiles` with a `Name`, `Cmd`, and `IconFile` - the script matches existing profiles by name and generates a GUID automatically for new ones.

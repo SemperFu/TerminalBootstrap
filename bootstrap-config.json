@@ -1,0 +1,26 @@
+{
+    "silent": false,
+    "theme": null,
+    "packages": [
+        { "id": "Microsoft.PowerShell",                                          "install": true,  "update": true,  "silent": false },
+        { "id": "JanDeDobbeleer.OhMyPosh",                                      "install": true,  "update": true,  "silent": false },
+        { "id": ["GitHub.Copilot", "GitHub.Copilot.Prerelease"],                 "install": true,  "update": true,  "silent": false, "process": "copilot" },
+        { "id": "Microsoft.VCRedist.2015+.x64",                                 "install": true,  "update": false, "silent": true },
+        { "id": "nepnep.neofetch-win",                                           "install": true,  "update": true,  "silent": true },
+        { "id": "Microsoft.VisualStudioCode",                                    "install": false, "update": true,  "silent": false, "process": "Code" },
+        { "id": "Microsoft.WindowsTerminal",                                     "install": false, "update": true,  "silent": false },
+        { "id": "Anthropic.ClaudeCode",                                          "install": false, "update": true,  "silent": false, "process": "claude" },
+        { "id": "GitHub.cli",                                                    "install": false, "update": true,  "silent": false }
+    ],
+    "cliProfiles": [
+        { "name": "Copilot CLI", "cmd": "copilot", "iconFile": "Copilot.png" },
+        { "name": "Claude Code", "cmd": "claude",  "iconFile": "ClaudeCode.png" }
+    ],
+    "modules": [
+        { "name": "PSReadLine",           "minVersion": "2.4.5", "minPS": 7, "installParams": { "SkipPublisherCheck": true }, "silent": true },
+        { "name": "CompletionPredictor",  "requires": { "module": "PSReadLine", "minVersion": "2.2.6" }, "silent": true },
+        { "name": "PowerType",            "requires": { "module": "PSReadLine", "minVersion": "2.2.6" }, "minPS": 7, "installParams": { "AllowPrerelease": true }, "silent": true },
+        { "name": "GlyphShell",           "minPS": 7, "installParams": { "Scope": "CurrentUser" }, "silent": true },
+        { "name": "Terminal-Icons",        "maxPS": 6, "minVersion": "0.11.0", "installParams": { "Scope": "CurrentUser" }, "silent": true }
+    ]
+}

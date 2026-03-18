@@ -36,7 +36,7 @@ When updates are found, it prints a ready-to-copy `winget update` command so you
 ## Features
 
 ### Package Management
-Keeps a list of WinGet packages and checks them on startup. Missing packages get installed automatically. Packages with updates show the version diff. Uses a single `Get-WinGetPackage` batch call with local filtering - no extra network requests. See [Customization](CUSTOMIZATION.md#add-packages) for how to add your own packages.
+Keeps a list of WinGet packages and checks them on startup. Missing packages get installed automatically. Packages with updates show the version diff. Uses a single `Get-WinGetPackage` batch call with local filtering - no extra network requests. Package list is configured in [`bootstrap-config.json`](CUSTOMIZATION.md) - no need to edit the script.
 
 ### Windows Terminal Configuration
 Automatically configures Windows Terminal on PS7:
@@ -107,11 +107,12 @@ $b = "https://raw.githubusercontent.com/SemperFu/TerminalBootstrap/master"
 mkdir ~\Documents\PowerShell, ~\Documents\WindowsPowerShell -Force | Out-Null
 iwr "$b/Microsoft.PowerShell_profile.ps1" -OutFile ~\Documents\PowerShell\Microsoft.PowerShell_profile.ps1
 iwr "$b/WindowsPowerShell_profile.ps1" -OutFile ~\Documents\WindowsPowerShell\Microsoft.PowerShell_profile.ps1
+iwr "$b/bootstrap-config.json" -OutFile ~\Documents\PowerShell\bootstrap-config.json
 ```
 
 Open a new PowerShell window and the profile will bootstrap everything on first run (including installing PowerShell 7 if missing).
 
-Edit the `$packages` array to add/remove whatever WinGet packages you want tracked. See [CUSTOMIZATION.md](CUSTOMIZATION.md) for details.
+Edit `bootstrap-config.json` (next to your profile) to add/remove packages, modules, CLI profiles, or change the theme. See [CUSTOMIZATION.md](CUSTOMIZATION.md) for details.
 
 ### Manual Setup
 
@@ -145,7 +146,7 @@ If your Documents folder already syncs through OneDrive, it's automatic - nothin
 
 ### Customization
 
-See [CUSTOMIZATION.md](CUSTOMIZATION.md) for how to add packages, tab completions, and terminal profiles.
+Edit `bootstrap-config.json` next to your profile to customize packages, modules, CLI profiles, theme, and output verbosity - no need to touch the script itself. See [CUSTOMIZATION.md](CUSTOMIZATION.md) for the full reference.
 
 ## Requirements
 
